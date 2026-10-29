@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kunci Sidik Jari Arduino</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef2f1; --ink:#10252b; --muted:#4d6268; --teal:#0f766e; --amber:#e8a33d;
+  --ok:#0f766e; --bad:#b4400f; --card:#ffffff; --line:#cfdad8;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{font-family:"IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;font-size:17px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Segoe UI",sans-serif;line-height:1.1;letter-spacing:-.02em}
+a{color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:0 22px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-weight:500}
+nav b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem}
+nav a{text-decoration:none;margin-left:18px;color:var(--muted)}
+nav a:hover{color:var(--ink)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:42px 0 70px}
+.hero h1{font-size:clamp(2.4rem,6vw,4.1rem);font-weight:800}
+.hero p{margin:18px 0 26px;color:var(--muted);max-width:46ch}
+.btn{display:inline-block;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:14px 22px;font:500 1rem "IBM Plex Sans",sans-serif;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--teal)}
+.btn:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink);margin-left:8px}
+.btn.ghost:hover{background:var(--ink);color:#fff}
+
+/* scanner */
+.scanner{position:relative;width:min(100%,320px);margin:0 auto}
+.pad{position:relative;aspect-ratio:200/260;background:var(--card);border:2px solid var(--ink);border-radius:28px;overflow:hidden;display:grid;place-items:center;color:var(--ink);transition:color .4s,border-color .4s,box-shadow .4s;box-shadow:8px 8px 0 var(--ink)}
+.pad svg{width:78%;height:auto}
+.pad.scanning{color:var(--teal);border-color:var(--teal);box-shadow:8px 8px 0 var(--teal)}
+.pad.ok{color:var(--ok);border-color:var(--ok);box-shadow:8px 8px 0 var(--ok)}
+.pad.bad{color:var(--bad);border-color:var(--bad);box-shadow:8px 8px 0 var(--bad)}
+.beam{position:absolute;left:0;right:0;top:0;height:4px;background:var(--amber);box-shadow:0 0 18px 6px rgba(232,163,61,.55);opacity:0}
+.pad.scanning .beam{opacity:1;animation:sweep 1.6s ease-in-out infinite alternate}
+@keyframes sweep{from{top:6%}to{top:94%}}
+.status{margin-top:26px;text-align:center;min-height:3.2em}
+.status strong{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:1.35rem}
+.status span{color:var(--muted);font-size:.95rem}
+.status.ok strong{color:var(--ok)} .status.bad strong{color:var(--bad)}
+.scanner .btn{display:block;width:100%;margin-top:18px}
+
+/* sections */
+section{padding:60px 0;border-top:1px solid var(--line)}
+section h2{font-size:clamp(1.8rem,4vw,2.5rem);margin-bottom:10px}
+section>.wrap>p{color:var(--muted);max-width:60ch;margin-bottom:28px}
+.steps{list-style:none;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;margin-bottom:12px}
+.steps h3{font-size:1.1rem;margin-bottom:6px}
+.steps p{font-size:.93rem;color:var(--muted);line-height:1.5}
+.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.parts div{background:var(--card);border-left:5px solid var(--teal);padding:16px 18px;border-radius:6px}
+.parts h3{font-size:1.05rem}
+.parts p{font-size:.92rem;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--card);border-radius:10px;overflow:hidden}
+th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--ink);color:#fff;font-weight:500}
+footer{background:var(--ink);color:#cfe0de;padding:34px 0;text-align:center;font-size:.92rem}
+
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;padding-top:18px}
+  .steps{grid-template-columns:1fr 1fr}
+  nav a{display:none}
+}
+@media(max-width:420px){.steps{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav><b>Kunci Sidik Jari</b><div><a href="#cara">Cara kerja</a><a href="#komponen">Komponen</a><a href="#pin">Pin</a></div></nav>
+
+  <header class="hero">
+    <div>
+      <h1>Pintu terbuka hanya untuk jari yang terdaftar.</h1>
+      <p>Sistem kunci berbasis Arduino dan sensor sidik jari. Sensor membaca pola jari, Arduino mencocokkannya dengan data tersimpan, lalu relay membuka kunci.</p>
+      <a class="btn" href="#cara">Lihat cara kerja</a><a class="btn ghost" href="#pin">Skema pin</a>
+    </div>
+
+    <div class="scanner">
+      <div class="pad" id="pad">
+        <svg id="print" viewBox="0 0 200 260" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"></svg>
+        <div class="beam"></div>
+      </div>
+      <div class="status" id="status" aria-live="polite"><strong>Siap memindai</strong><span>Tekan tombol untuk mencoba simulasi.</span></div>
+      <button class="btn" id="scanBtn">Tempelkan jari</button>
+    </div>
+  </header>
+</div>
+
+<section id="cara"><div class="wrap">
+  <h2>Cara kerja</h2>
+  <p>Empat tahap dari jari menempel sampai kunci terbuka.</p>
+  <ol class="steps">
+    <li><h3>Jari menempel</h3><p>Sensor memotret pola garis jari.</p></li>
+    <li><h3>Dikenali</h3><p>Gambar diubah menjadi template data oleh modul sensor.</p></li>
+    <li><h3>Dicocokkan</h3><p>Arduino meminta sensor mencari template yang sama di memori.</p></li>
+    <li><h3>Kunci bereaksi</h3><p>Cocok: relay menyala dan solenoid terbuka. Tidak cocok: buzzer berbunyi.</p></li>
+  </ol>
+</div></section>
+
+<section id="komponen"><div class="wrap">
+  <h2>Komponen utama</h2>
+  <p>Semua komponen mudah didapat dan murah.</p>
+  <div class="parts">
+    <div><h3>Arduino Uno</h3><p>Otak sistem, menjalankan program pencocokan.</p></div>
+    <div><h3>Sensor sidik jari</h3><p>Modul R307 atau AS608 untuk membaca dan menyimpan template.</p></div>
+    <div><h3>Relay 5V</h3><p>Saklar yang menyalakan solenoid dari sinyal Arduino.</p></div>
+    <div><h3>Solenoid door lock</h3><p>Kunci elektrik yang membuka saat dialiri listrik.</p></div>
+    <div><h3>LCD atau LED + buzzer</h3><p>Penanda hasil: diterima atau ditolak.</p></div>
+  </div>
+</div></section>
+
+<section id="pin"><div class="wrap">
+  <h2>Skema pin</h2>
+  <p>Contoh sambungan umum dengan SoftwareSerial. Sesuaikan dengan modul yang dipakai.</p>
+  <div class="tablewrap"><table>
+    <tr><th>Sensor</th><th>Arduino</th></tr>
+    <tr><td>VCC</td><td>3.3V atau 5V (cek datasheet)</td></tr>
+    <tr><td>GND</td><td>GND</td></tr>
+    <tr><td>TX (sensor)</td><td>Pin 2 (RX Arduino)</td></tr>
+    <tr><td>RX (sensor)</td><td>Pin 3 (TX Arduino)</td></tr>
+    <tr><td>Relay IN</td><td>Pin 8</td></tr>
+  </table></div>
+</div></section>
+
+<footer><div class="wrap">Proyek Teknologi Rekayasa Otomasi · Politeknik Negeri Madiun</div></footer>
+
+<script>
+(function(){
+  // gambar pola sidik jari dari cincin elips
+  var svg=document.getElementById('print'),NS='http://www.w3.org/2000/svg',html='';
+  for(var r=8,i=0;r<=86;r+=9,i++){
+    var rx=r,ry=r*1.32,len=Math.PI*(3*(rx+ry)-Math.sqrt((3*rx+ry)*(rx+3*ry)));
+    var gap=6+(i%3)*4,dash=Math.max(30,len/(3+(i%4)));
+    html+='<ellipse cx="100" cy="132" rx="'+rx+'" ry="'+ry+'" stroke-dasharray="'+dash.toFixed(1)+' '+gap+'" stroke-dashoffset="'+(i*17)+'"/>';
+  }
+  svg.innerHTML=html;
+
+  var pad=document.getElementById('pad'),status=document.getElementById('status'),btn=document.getElementById('scanBtn'),busy=false,n=0;
+  function show(cls,title,sub){
+    pad.className='pad '+cls;status.className='status '+cls;
+    status.innerHTML='<strong>'+title+'</strong><span>'+sub+'</span>';
+  }
+  btn.addEventListener('click',function(){
+    if(busy)return;busy=true;btn.disabled=true;
+    show('scanning','Memindai…','Tahan jari di sensor.');
+    setTimeout(function(){
+      n++;
+      if(n%3!==0){show('ok','Akses diterima','ID #1 cocok. Relay menyala, kunci terbuka.')}
+      else{show('bad','Akses ditolak','Sidik jari tidak terdaftar. Buzzer berbunyi.')}
+      busy=false;btn.disabled=false;btn.textContent='Coba lagi';
+    },2400);
+  });
+})();
+</script>
+</body>
+</html>
