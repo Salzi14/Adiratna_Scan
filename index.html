@@ -1,168 +1,242 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kunci Sidik Jari Arduino</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#eef2f1; --ink:#10252b; --muted:#4d6268; --teal:#0f766e; --amber:#e8a33d;
-  --ok:#0f766e; --bad:#b4400f; --card:#ffffff; --line:#cfdad8;
-}
-*{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth}
-body{font-family:"IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;font-size:17px}
-h1,h2,h3{font-family:"Bricolage Grotesque","Segoe UI",sans-serif;line-height:1.1;letter-spacing:-.02em}
-a{color:inherit}
-.wrap{max-width:980px;margin:0 auto;padding:0 22px}
-nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-weight:500}
-nav b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem}
-nav a{text-decoration:none;margin-left:18px;color:var(--muted)}
-nav a:hover{color:var(--ink)}
-
-/* hero */
-.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:42px 0 70px}
-.hero h1{font-size:clamp(2.4rem,6vw,4.1rem);font-weight:800}
-.hero p{margin:18px 0 26px;color:var(--muted);max-width:46ch}
-.btn{display:inline-block;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:14px 22px;font:500 1rem "IBM Plex Sans",sans-serif;cursor:pointer;text-decoration:none}
-.btn:hover{background:var(--teal)}
-.btn:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
-.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink);margin-left:8px}
-.btn.ghost:hover{background:var(--ink);color:#fff}
-
-/* scanner */
-.scanner{position:relative;width:min(100%,320px);margin:0 auto}
-.pad{position:relative;aspect-ratio:200/260;background:var(--card);border:2px solid var(--ink);border-radius:28px;overflow:hidden;display:grid;place-items:center;color:var(--ink);transition:color .4s,border-color .4s,box-shadow .4s;box-shadow:8px 8px 0 var(--ink)}
-.pad svg{width:78%;height:auto}
-.pad.scanning{color:var(--teal);border-color:var(--teal);box-shadow:8px 8px 0 var(--teal)}
-.pad.ok{color:var(--ok);border-color:var(--ok);box-shadow:8px 8px 0 var(--ok)}
-.pad.bad{color:var(--bad);border-color:var(--bad);box-shadow:8px 8px 0 var(--bad)}
-.beam{position:absolute;left:0;right:0;top:0;height:4px;background:var(--amber);box-shadow:0 0 18px 6px rgba(232,163,61,.55);opacity:0}
-.pad.scanning .beam{opacity:1;animation:sweep 1.6s ease-in-out infinite alternate}
-@keyframes sweep{from{top:6%}to{top:94%}}
-.status{margin-top:26px;text-align:center;min-height:3.2em}
-.status strong{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:1.35rem}
-.status span{color:var(--muted);font-size:.95rem}
-.status.ok strong{color:var(--ok)} .status.bad strong{color:var(--bad)}
-.scanner .btn{display:block;width:100%;margin-top:18px}
-
-/* sections */
-section{padding:60px 0;border-top:1px solid var(--line)}
-section h2{font-size:clamp(1.8rem,4vw,2.5rem);margin-bottom:10px}
-section>.wrap>p{color:var(--muted);max-width:60ch;margin-bottom:28px}
-.steps{list-style:none;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
-.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;margin-bottom:12px}
-.steps h3{font-size:1.1rem;margin-bottom:6px}
-.steps p{font-size:.93rem;color:var(--muted);line-height:1.5}
-.parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-.parts div{background:var(--card);border-left:5px solid var(--teal);padding:16px 18px;border-radius:6px}
-.parts h3{font-size:1.05rem}
-.parts p{font-size:.92rem;color:var(--muted)}
-.tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;background:var(--card);border-radius:10px;overflow:hidden}
-th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line)}
-th{background:var(--ink);color:#fff;font-weight:500}
-footer{background:var(--ink);color:#cfe0de;padding:34px 0;text-align:center;font-size:.92rem}
-
-@media(max-width:760px){
-  .hero{grid-template-columns:1fr;padding-top:18px}
-  .steps{grid-template-columns:1fr 1fr}
-  nav a{display:none}
-}
-@media(max-width:420px){.steps{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arduino Fingerprint Door Access System</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
-  <nav><b>Kunci Sidik Jari</b><div><a href="#cara">Cara kerja</a><a href="#komponen">Komponen</a><a href="#pin">Pin</a></div></nav>
-
-  <header class="hero">
-    <div>
-      <h1>Pintu terbuka hanya untuk jari yang terdaftar.</h1>
-      <p>Sistem kunci berbasis Arduino dan sensor sidik jari. Sensor membaca pola jari, Arduino mencocokkannya dengan data tersimpan, lalu relay membuka kunci.</p>
-      <a class="btn" href="#cara">Lihat cara kerja</a><a class="btn ghost" href="#pin">Skema pin</a>
-    </div>
-
-    <div class="scanner">
-      <div class="pad" id="pad">
-        <svg id="print" viewBox="0 0 200 260" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"></svg>
-        <div class="beam"></div>
+<div id="app">
+  <header class="wrap">
+    <nav>
+      <a class="brand" href="#top">
+        <span class="brand-icon">⌁</span>
+        <span>FINGERPRINT<span class="brand-accent">.ACCESS</span>
+          <small>ARDUINO SECURITY SYSTEM</small>
+        </span>
+      </a>
+      <div class="navlinks">
+        <a href="#dashboard">Dashboard</a>
+        <a href="#simulasi">Simulasi</a>
+        <a href="#log">Log Aktivitas</a>
       </div>
-      <div class="status" id="status" aria-live="polite"><strong>Siap memindai</strong><span>Tekan tombol untuk mencoba simulasi.</span></div>
-      <button class="btn" id="scanBtn">Tempelkan jari</button>
-    </div>
+    </nav>
   </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <div>
+        <div class="eyebrow">Smart access</div>
+        <h1>Akses aman,<br><span>cukup satu sentuhan.</span></h1>
+        <p class="lead">
+          Simulasi sistem pintu otomatis berbasis sidik jari dan Arduino.
+          Pelajari bagaimana autentikasi biometrik menentukan akses,
+          mengaktifkan pengunci, dan menjaga pintu tetap aman.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="#simulasi">Mulai Simulasi ↗</a>
+        </div>
+      </div>
+
+      <div class="hero-art" aria-label="Ilustrasi pintu otomatis">
+        <div class="art-label">ACCESS CONTROL</div>
+        <div class="door-illustration" id="heroDoor">
+          <span class="door-handle"></span>
+        </div>
+        <div class="float-tag tag1">
+          SYSTEM STATUS
+          <strong id="heroStatus">STANDBY</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="dashboard">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Live simulation state</div>
+          <h2>Ringkasan Sistem</h2>
+        </div>
+        <p>Status akan berubah otomatis ketika kamu mencoba skenario pemindaian di panel simulasi.</p>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="label">Status Arduino</div>
+          <div class="value"><span class="status neutral" id="arduinoStatus">Simulated</span></div>
+          <div class="sub">Tidak terhubung ke hardware</div>
+        </div>
+        <div class="card">
+          <div class="label">Status Sensor</div>
+          <div class="value"><span class="status neutral" id="sensorStatus">Ready</span></div>
+          <div class="sub">Fingerprint FPM10A (simulasi)</div>
+        </div>
+        <div class="card">
+          <div class="label">Status Pintu</div>
+          <div class="value"><span class="status neutral" id="doorStatusText">Locked</span></div>
+          <div class="sub">Electronic lock: <span id="lockText">Locked</span></div>
+        </div>
+        <div class="card">
+          <div class="label">Statistik Akses</div>
+          <div class="value">
+            <span id="successCount">0</span>
+            <span class="count-caption">berhasil</span>
+          </div>
+          <div class="sub"><span id="failedCount">0</span> akses ditolak</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="simulasi">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Interactive demo</div>
+          <h2>Coba Simulasi Akses</h2>
+        </div>
+        <p>Pilih jenis sidik jari, lalu mulai pemindaian. Hasilnya akan mengubah visualisasi pintu dan log aktivitas.</p>
+      </div>
+
+      <div class="sim-layout">
+        <div class="panel">
+          <h3>01 / Fingerprint scanner</h3>
+          <p class="panel-desc">Pilih skenario sidik jari untuk menguji respons sistem autentikasi.</p>
+
+          <div class="scan-zone">
+            <div class="scan-device" id="scanDevice">
+              <div class="fingerprint">▥</div>
+              <div class="scan-line"></div>
+            </div>
+            <div class="scan-info">
+              <div class="status neutral" id="scanStatus">SENSOR READY</div>
+              <p id="scanMessage">Letakkan jari simulasi pada sensor, kemudian tekan tombol scan.</p>
+              <p class="user-caption">Pengguna terdaftar: <strong>ID 24042007 · Risky Sayang Iqbal</strong></p>
+            </div>
+          </div>
+
+          <div class="select-row">
+            <button class="choice active" id="validChoice" type="button">
+              ✓ Sidik jari terdaftar
+            </button>
+            <button class="choice" id="invalidChoice" type="button">
+              ✕ Tidak terdaftar
+            </button>
+          </div>
+
+          <button class="btn primary full" id="scanBtn" type="button">
+            ▥ &nbsp; Scan Fingerprint
+          </button>
+
+          <div class="result">
+            <div>
+              <strong id="resultTitle">Sistem Siaga</strong>
+              <small id="resultDesc">Pintu terkunci menunggu autentikasi.</small>
+            </div>
+            <span class="status neutral" id="accessBadge">STANDBY</span>
+          </div>
+
+          <div class="actions action-row">
+            <button class="btn ghost action-button" id="resetBtn" type="button">Reset Sistem</button>
+            <button class="btn ghost action-button" id="autoLockBtn" type="button">Auto Lock: ON</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>02 / Door visualization</h3>
+          <p class="panel-desc">
+            Pintu hanya terbuka jika autentikasi berhasil. Pengunci akan aktif
+            kembali setelah beberapa detik jika Auto Lock menyala.
+          </p>
+
+          <div class="door-scene">
+            <div class="door-visual" id="mainDoor" aria-label="Visualisasi pintu">
+              <!-- Visual pintu tertutup -->
+              <svg class="door-state-image closed" viewBox="0 0 190 185" role="img" aria-label="Pintu tertutup">
+                <rect x="35" y="8" width="120" height="165" rx="4"
+                  fill="#294f68" stroke="#75c9d8" stroke-width="7"/>
+                <rect x="48" y="21" width="94" height="139" rx="2"
+                  fill="#18384f" stroke="#5b91aa" stroke-width="3"/>
+                <path d="M58 31H132V150H58Z" fill="#20465e"/>
+                <circle cx="126" cy="94" r="5" fill="#59d8e9"/>
+                <rect x="25" y="173" width="140" height="6" rx="3" fill="#4a7188"/>
+              </svg>
+
+              <!-- Visual pintu terbuka -->
+              <svg class="door-state-image open" viewBox="0 0 190 185" role="img" aria-label="Pintu terbuka">
+                <rect x="25" y="8" width="120" height="165" rx="4"
+                  fill="#17364b" stroke="#75c9d8" stroke-width="7"/>
+                <rect x="35" y="19" width="96" height="145"
+                  fill="#0c2232" stroke="#416d85" stroke-width="3"/>
+                <path d="M145 17 L177 31 L177 157 L145 171Z"
+                  fill="#32647d" stroke="#75c9d8" stroke-width="4"/>
+                <path d="M151 29 L168 37 L168 150 L151 158Z" fill="#244c65"/>
+                <circle cx="155" cy="94" r="5" fill="#59d8e9"/>
+                <path d="M25 173H165" stroke="#4a7188" stroke-width="6" stroke-linecap="round"/>
+              </svg>
+            </div>
+
+            <div class="lock-indicator">
+              <span class="lock-icon" id="lockIcon">▣</span>
+              <span id="lockSceneText">ELECTRONIC LOCK · LOCKED</span>
+            </div>
+          </div>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">STEP 01</div>
+              <h3>Scan</h3>
+              <p>Sensor membaca sidik jari simulasi.</p>
+            </div>
+            <div class="step">
+              <div class="step-num">STEP 02</div>
+              <h3>Verify</h3>
+              <p>Sistem memeriksa kecocokan identitas.</p>
+            </div>
+            <div class="step">
+              <div class="step-num">STEP 03</div>
+              <h3>Access</h3>
+              <p>Akses diberikan atau ditolak.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="log">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">System records</div>
+          <h2>Log Aktivitas</h2>
+        </div>
+        <div class="actions no-margin">
+          <button class="btn ghost" id="clearLogBtn" type="button">Hapus Log</button>
+        </div>
+      </div>
+
+      <div class="log-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Waktu</th>
+              <th>ID Pengguna</th>
+              <th>Nama</th>
+              <th>Autentikasi</th>
+              <th>Status Pintu</th>
+            </tr>
+          </thead>
+          <tbody id="logBody">
+            <tr>
+              <td colspan="6" class="empty">Belum ada aktivitas. Jalankan simulasi untuk membuat log.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
 </div>
 
-<section id="cara"><div class="wrap">
-  <h2>Cara kerja</h2>
-  <p>Empat tahap dari jari menempel sampai kunci terbuka.</p>
-  <ol class="steps">
-    <li><h3>Jari menempel</h3><p>Sensor memotret pola garis jari.</p></li>
-    <li><h3>Dikenali</h3><p>Gambar diubah menjadi template data oleh modul sensor.</p></li>
-    <li><h3>Dicocokkan</h3><p>Arduino meminta sensor mencari template yang sama di memori.</p></li>
-    <li><h3>Kunci bereaksi</h3><p>Cocok: relay menyala dan solenoid terbuka. Tidak cocok: buzzer berbunyi.</p></li>
-  </ol>
-</div></section>
-
-<section id="komponen"><div class="wrap">
-  <h2>Komponen utama</h2>
-  <p>Semua komponen mudah didapat dan murah.</p>
-  <div class="parts">
-    <div><h3>Arduino Uno</h3><p>Otak sistem, menjalankan program pencocokan.</p></div>
-    <div><h3>Sensor sidik jari</h3><p>Modul R307 atau AS608 untuk membaca dan menyimpan template.</p></div>
-    <div><h3>Relay 5V</h3><p>Saklar yang menyalakan solenoid dari sinyal Arduino.</p></div>
-    <div><h3>Solenoid door lock</h3><p>Kunci elektrik yang membuka saat dialiri listrik.</p></div>
-    <div><h3>LCD atau LED + buzzer</h3><p>Penanda hasil: diterima atau ditolak.</p></div>
-  </div>
-</div></section>
-
-<section id="pin"><div class="wrap">
-  <h2>Skema pin</h2>
-  <p>Contoh sambungan umum dengan SoftwareSerial. Sesuaikan dengan modul yang dipakai.</p>
-  <div class="tablewrap"><table>
-    <tr><th>Sensor</th><th>Arduino</th></tr>
-    <tr><td>VCC</td><td>3.3V atau 5V (cek datasheet)</td></tr>
-    <tr><td>GND</td><td>GND</td></tr>
-    <tr><td>TX (sensor)</td><td>Pin 2 (RX Arduino)</td></tr>
-    <tr><td>RX (sensor)</td><td>Pin 3 (TX Arduino)</td></tr>
-    <tr><td>Relay IN</td><td>Pin 8</td></tr>
-  </table></div>
-</div></section>
-
-<footer><div class="wrap">Proyek Teknologi Rekayasa Otomasi · Politeknik Negeri Madiun</div></footer>
-
-<script>
-(function(){
-  // gambar pola sidik jari dari cincin elips
-  var svg=document.getElementById('print'),NS='http://www.w3.org/2000/svg',html='';
-  for(var r=8,i=0;r<=86;r+=9,i++){
-    var rx=r,ry=r*1.32,len=Math.PI*(3*(rx+ry)-Math.sqrt((3*rx+ry)*(rx+3*ry)));
-    var gap=6+(i%3)*4,dash=Math.max(30,len/(3+(i%4)));
-    html+='<ellipse cx="100" cy="132" rx="'+rx+'" ry="'+ry+'" stroke-dasharray="'+dash.toFixed(1)+' '+gap+'" stroke-dashoffset="'+(i*17)+'"/>';
-  }
-  svg.innerHTML=html;
-
-  var pad=document.getElementById('pad'),status=document.getElementById('status'),btn=document.getElementById('scanBtn'),busy=false,n=0;
-  function show(cls,title,sub){
-    pad.className='pad '+cls;status.className='status '+cls;
-    status.innerHTML='<strong>'+title+'</strong><span>'+sub+'</span>';
-  }
-  btn.addEventListener('click',function(){
-    if(busy)return;busy=true;btn.disabled=true;
-    show('scanning','Memindai…','Tahan jari di sensor.');
-    setTimeout(function(){
-      n++;
-      if(n%3!==0){show('ok','Akses diterima','ID #1 cocok. Relay menyala, kunci terbuka.')}
-      else{show('bad','Akses ditolak','Sidik jari tidak terdaftar. Buzzer berbunyi.')}
-      busy=false;btn.disabled=false;btn.textContent='Coba lagi';
-    },2400);
-  });
-})();
-</script>
+<script src="script.js"></script>
 </body>
 </html>
