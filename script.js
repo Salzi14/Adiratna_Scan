@@ -384,8 +384,13 @@ function resetSystem() {
 setDoor(false);
 renderLogs();
 
-if ("serial" in navigator) {
-  alert("Web Serial tersedia!");
-} else {
-  alert("Web Serial tidak tersedia!");
+async function testSerial() {
+  try {
+    const port = await navigator.serial.requestPort();
+    alert("Perangkat serial berhasil dipilih!");
+  } catch (error) {
+    alert("Koneksi dibatalkan atau gagal: " + error.message);
+  }
 }
+
+testSerial();
