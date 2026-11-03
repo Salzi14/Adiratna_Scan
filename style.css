@@ -551,9 +551,9 @@ h1 span {
 
 .select-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
-  margin: 19px 0 14px;
+  margin: 20px 0 14px;
 }
 
 .choice {

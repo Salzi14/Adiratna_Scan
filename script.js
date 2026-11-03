@@ -1,38 +1,67 @@
-// =====================================
-// FINGERPRINT.ACCESS
-// Arduino Fingerprint Door Access Demo
-// Browser simulation only
-// =====================================
-
 let selectedValid = true;
+let selectedUser = 1;
+
+const users = {
+  1: 'Raja Salman',
+  2: 'Aisyah Cantik',
+  3: 'Iqbal Fakboy',
+  4: 'Rizky ❤️ Karim'
+};
+
 let scanning = false;
 let autoLock = true;
-
 let success = 0;
 let failed = 0;
 let logs = [];
-
 let doorTimer = null;
 let scanTimer = null;
 
-// Mempermudah pemanggilan elemen HTML
+// Buat fungsi $ terlebih dahulu
 const $ = (id) => document.getElementById(id);
+
+// Baru pasang event listener
+[1, 2, 3, 4].forEach(id => {
+  $('userChoice' + id).addEventListener('click', () => {
+    chooseFinger(true, id);
+  });
+});
+
+$('invalidChoice').addEventListener('click', () => {
+  chooseFinger(false);
+});
+
+$('scanBtn').addEventListener('click', scanFingerprint);
+$('resetBtn').addEventListener('click', resetSystem);
+$('autoLockBtn').addEventListener('click', toggleAutoLock);
+$('clearLogBtn').addEventListener('click', clearLogs);
 
 // =====================================
 // PILIH SIDIK JARI
 // =====================================
 
-function chooseFinger(valid) {
+function chooseFinger(valid, userId = selectedUser) {
   if (scanning) return;
 
   selectedValid = valid;
 
-  $("validChoice").classList.toggle("active", valid);
-  $("invalidChoice").classList.toggle("active", !valid);
+  if (valid) selectedUser = userId;
 
-  $("scanMessage").textContent = valid
-    ? "Skenario dipilih: sidik jari terdaftar. Sistem seharusnya memberikan akses."
-    : "Skenario dipilih: sidik jari tidak terdaftar. Sistem harus menolak akses.";
+  [1, 2, 3, 4].forEach(id => {
+    $('userChoice' + id).classList.toggle(
+      'active',
+      valid && selectedUser === id
+    );
+  });
+
+  $('invalidChoice').classList.toggle('active', !valid);
+
+  $('selectedUserLabel').textContent = valid
+    ? `ID 0${selectedUser} · ${users[selectedUser]}`
+    : 'Tidak dikenal';
+
+  $('scanMessage').textContent = valid
+    ? `Skenario dipilih: ${users[selectedUser]}.`
+    : 'Sidik jari tidak dikenal.';
 }
 
 // =====================================
@@ -51,29 +80,21 @@ function setStatus(id, text, kind = "neutral") {
 // =====================================
 
 function setDoor(open) {
-  // Mengubah visualisasi pintu utama
-  $("mainDoor").classList.toggle("open", open);
+  $('mainDoor').classList.toggle('open', open);
+  $('heroDoor').classList.toggle('open', open);
 
-  // Mengubah ilustrasi pintu bagian hero
-  $("heroDoor").classList.toggle("open", open);
+  $('doorStatusText').textContent = open ? 'Open' : 'Locked';
+  $('doorStatusText').className =
+    'status ' + (open ? 'ok' : 'neutral');
 
-  // Mengubah informasi status pintu
-  $("doorStatusText").textContent = open ? "Open" : "Locked";
+  $('lockText').textContent = open ? 'Unlocked' : 'Locked';
+  $('lockSceneText').textContent =
+    'ELECTRONIC LOCK · ' + (open ? 'UNLOCKED' : 'LOCKED');
 
-  $("doorStatusText").className =
-    "status " + (open ? "ok" : "neutral");
+  $('lockIcon').style.color =
+    open ? 'var(--red)' : 'var(--green)';
 
-  $("lockText").textContent = open ? "Unlocked" : "Locked";
-
-  $("lockSceneText").textContent =
-    "ELECTRONIC LOCK · " + (open ? "UNLOCKED" : "LOCKED");
-
-  // Mengubah indikator pengunci
-  $("lockIcon").style.color = open
-    ? "var(--red)"
-    : "var(--green)";
-
-  $("lockIcon").textContent = open ? "▢" : "▣";
+  $('lockIcon').textContent = open ? '▢' : '▣';
 }
 
 // =====================================
@@ -109,6 +130,7 @@ function scanFingerprint() {
 
   // Proses verifikasi simulasi
   scanTimer = setTimeout(() => {
+  scanTimer = null;
     scanning = false;
 
     $("scanDevice").classList.remove("scanning");
@@ -135,7 +157,7 @@ function scanFingerprint() {
     // Menambahkan aktivitas ke log
     addLog(fingerprintMatched);
 
-  }, 1400);
+  }, 2600);
 }
 
 // =====================================
@@ -153,7 +175,7 @@ function accessGranted() {
   setStatus("accessBadge", "GRANTED", "ok");
 
   $("scanMessage").textContent =
-    "Sidik jari cocok dengan ID 24042007 · Rizky Sayang Iqbal.";
+  "Sidik jari cocok dengan ID 0" + selectedUser + " · " + users[selectedUser] + ".";
 
   $("resultTitle").textContent = "Access Granted";
 
@@ -213,11 +235,11 @@ function addLog(valid) {
   });
 
   const activity = {
-    time: time,
-    id: valid ? "24042007" : "—",
-    name: valid ? "Rizky Sayang Iqbal" : "Tidak dikenal",
-    valid: valid,
-    door: valid ? "Open" : "Locked"
+  time: time,
+  id: valid ? "ID " + String(selectedUser).padStart(2, "0") : "—",
+  name: valid ? users[selectedUser] : "Tidak dikenal",
+  valid: valid,
+  door: valid ? "Open" : "Locked"
   };
 
   logs.unshift(activity);
@@ -276,99 +298,84 @@ function clearLogs() {
 function toggleAutoLock() {
   autoLock = !autoLock;
 
-  $("autoLockBtn").textContent =
-    "Auto Lock: " + (autoLock ? "ON" : "OFF");
+  $('autoLockBtn').textContent = 'Auto Lock: ' + (autoLock ? 'ON' : 'OFF');
+  $('autoLockBtn').style.borderColor =
+    autoLock ? 'var(--green)' : 'var(--border)';
 
-  $("autoLockBtn").style.borderColor =
-    autoLock ? "var(--green)" : "var(--border)";
+  clearTimeout(doorTimer);
+  doorTimer = null;
 
-  // Jika Auto Lock dinyalakan saat pintu terbuka,
-  // pintu akan dikunci kembali setelah 4,5 detik.
-  if (autoLock && $("mainDoor").classList.contains("open")) {
-    clearTimeout(doorTimer);
-
+  // Jika Auto Lock aktif dan pintu masih terbuka
+  if (autoLock && $('mainDoor').classList.contains('open')) {
     doorTimer = setTimeout(() => {
       setDoor(false);
+      doorTimer = null;
 
-      $("heroStatus").textContent = "STANDBY";
-
-      $("resultTitle").textContent =
-        "Pintu Terkunci Kembali";
-
-      $("resultDesc").textContent =
-        "Auto Lock aktif: pengunci kembali ke kondisi awal.";
-
+      $('heroStatus').textContent = 'STANDBY';
+      $('resultTitle').textContent = 'Pintu Terkunci Kembali';
+      $('resultDesc').textContent = 'Auto Lock aktif: pengunci kembali ke kondisi awal.';
     }, 4500);
   }
+}
 
   // Jika Auto Lock dimatikan, batalkan timer pintu.
   if (!autoLock) {
     clearTimeout(doorTimer);
   }
-}
 
 // =====================================
 // RESET SISTEM
 // =====================================
 
 function resetSystem() {
-  // Membatalkan semua proses yang sedang berjalan
   clearTimeout(doorTimer);
   clearTimeout(scanTimer);
 
+  doorTimer = null;
+  scanTimer = null;
+
   scanning = false;
   selectedValid = true;
+  selectedUser = 1;
 
-  // Mengembalikan pilihan sidik jari
-  $("validChoice").classList.add("active");
-  $("invalidChoice").classList.remove("active");
+  success = 0;
+  failed = 0;
 
-  // Menghentikan animasi scanner
-  $("scanDevice").classList.remove("scanning");
+  autoLock = true;
+  $('autoLockBtn').textContent = 'Auto Lock: ON';
+  $('autoLockBtn').style.borderColor = 'var(--green)';
 
-  // Mengaktifkan kembali tombol scan
-  $("scanBtn").disabled = false;
-  $("scanBtn").textContent = "▥  Scan Fingerprint";
+  [1,2,3,4].forEach(id => {
+    $('userChoice'+id).classList.toggle('active', id === 1);
+  });
 
-  // Mengembalikan status sensor
-  setStatus("sensorStatus", "Ready", "neutral");
-  setStatus("scanStatus", "SENSOR READY", "neutral");
-  setStatus("accessBadge", "STANDBY", "neutral");
+  $('invalidChoice').classList.remove('active');
 
-  // Mengembalikan pesan
-  $("scanMessage").textContent =
-    "Letakkan jari simulasi pada sensor, kemudian tekan tombol scan.";
+  $('scanDevice').classList.remove('scanning');
+  $('scanBtn').disabled = false;
+  $('scanBtn').textContent = '▥  Scan Fingerprint';
 
-  $("resultTitle").textContent = "Sistem Siaga";
+  setStatus('arduinoStatus', 'Simulated', 'neutral');
+  setStatus('sensorStatus', 'Ready', 'neutral');
+  setStatus('scanStatus', 'SENSOR READY', 'neutral');
+  setStatus('accessBadge', 'STANDBY', 'neutral');
 
-  $("resultDesc").textContent =
-    "Pintu terkunci menunggu autentikasi.";
+  $('successCount').textContent = '0';
+  $('failedCount').textContent = '0';
 
-  $("heroStatus").textContent = "STANDBY";
+  $('selectedUserLabel').textContent = 'ID 01 · Salzi';
+  $('scanMessage').textContent = 'Pilih salah satu pengguna, kemudian tekan tombol scan.';
 
-  // Mengunci pintu kembali
+  $('resultTitle').textContent = 'Sistem Siaga';
+  $('resultDesc').textContent = 'Pintu terkunci menunggu autentikasi.';
+
+  $('heroStatus').textContent = 'STANDBY';
+
   setDoor(false);
+  renderLogs();
 }
 
 // =====================================
-// EVENT LISTENERS
-// =====================================
-
-$("validChoice").addEventListener("click", () => {
-  chooseFinger(true);
-});
-
-$("invalidChoice").addEventListener("click", () => {
-  chooseFinger(false);
-});
-
-$("scanBtn").addEventListener("click", scanFingerprint);
-
-$("resetBtn").addEventListener("click", resetSystem);
-
-$("autoLockBtn").addEventListener("click", toggleAutoLock);
-
-$("clearLogBtn").addEventListener("click", clearLogs);
 
 // =====================================
 // INISIALISASI SISTEM
@@ -376,3 +383,9 @@ $("clearLogBtn").addEventListener("click", clearLogs);
 
 setDoor(false);
 renderLogs();
+
+if ("serial" in navigator) {
+  alert("Web Serial tersedia!");
+} else {
+  alert("Web Serial tidak tersedia!");
+}

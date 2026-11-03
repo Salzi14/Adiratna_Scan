@@ -103,23 +103,38 @@
 
           <div class="scan-zone">
             <div class="scan-device" id="scanDevice">
-              <div class="fingerprint">▥</div>
+              <div class="fingerprint">🫆</div>
               <div class="scan-line"></div>
             </div>
             <div class="scan-info">
               <div class="status neutral" id="scanStatus">SENSOR READY</div>
               <p id="scanMessage">Letakkan jari simulasi pada sensor, kemudian tekan tombol scan.</p>
-              <p class="user-caption">Pengguna terdaftar: <strong>ID 24042007 · Risky Sayang Iqbal</strong></p>
+              <p class="user-caption">Pengguna terdaftar: <strong id="selectedUserLabel">ID 1B · Kelompok Superhero</strong></p>
             </div>
           </div>
 
           <div class="select-row">
-            <button class="choice active" id="validChoice" type="button">
-              ✓ Sidik jari terdaftar
-            </button>
-            <button class="choice" id="invalidChoice" type="button">
-              ✕ Tidak terdaftar
-            </button>
+            <div class="select-row">
+  <button class="choice active" id="userChoice1" type="button">
+    ID 01<br>Salman
+  </button>
+
+  <button class="choice" id="userChoice2" type="button">
+    ID 02<br>Aisyah
+  </button>
+
+  <button class="choice" id="userChoice3" type="button">
+    ID 03<br>Iqbal
+  </button>
+
+  <button class="choice" id="userChoice4" type="button">
+    ID 04<br>Rizky ABS
+  </button>
+
+  <button class="choice" id="invalidChoice" type="button">
+    ✕ Tidak dikenal
+  </button>
+</div>
           </div>
 
           <button class="btn primary full" id="scanBtn" type="button">
@@ -204,7 +219,7 @@
     <section class="section wrap" id="log">
       <div class="section-head">
         <div>
-          <div class="eyebrow">System records</div>
+          <div class="eyebrow">Riwayat Sistem</div>
           <h2>Log Aktivitas</h2>
         </div>
         <div class="actions no-margin">
