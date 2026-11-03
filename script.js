@@ -389,8 +389,6 @@ async function testSerial() {
     const port = await navigator.serial.requestPort();
     alert("Perangkat serial berhasil dipilih!");
   } catch (error) {
-    alert("Koneksi dibatalkan atau gagal: " + error.message);
+    alert("Gagal: " + error.message);
   }
 }
-
-testSerial();
