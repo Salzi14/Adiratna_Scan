@@ -5,7 +5,7 @@ const users = {
   1: 'Raja Salman',
   2: 'Aisyah Cantik',
   3: 'Iqbal Fakboy',
-  4: 'Rizky ❤️ Karim'
+  4: 'Rizky Mulmet'
 };
 
 let scanning = false;
