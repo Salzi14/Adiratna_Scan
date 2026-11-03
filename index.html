@@ -3,259 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Arduino Fingerprint Door Access System</title>
-  <link rel="stylesheet" href="style.css">
+  <title>NodeMCU USB Test</title>
 </head>
 <body>
-<div id="app">
-  <header class="wrap">
-    <nav>
-      <a class="brand" href="#top">
-        <span class="brand-icon">⌁</span>
-        <span>FINGERPRINT<span class="brand-accent">.ACCESS</span>
-          <small>ARDUINO SECURITY SYSTEM</small>
-        </span>
-      </a>
-      <div class="navlinks">
-        <a href="#dashboard">Dashboard</a>
-        <a href="#simulasi">Simulasi</a>
-        <a href="#log">Log Aktivitas</a>
-      </div>
-    </nav>
-  </header>
+  <h2>NodeMCU USB Communication</h2>
 
-  <main id="top">
-    <section class="hero wrap">
-      <div>
-        <div class="eyebrow">Smart access</div>
-        <h1>Akses aman,<br><span>cukup satu sentuhan.</span></h1>
-        <p class="lead">
-          Simulasi sistem pintu otomatis berbasis sidik jari dan Arduino.
-          Pelajari bagaimana autentikasi biometrik menentukan akses,
-          mengaktifkan pengunci, dan menjaga pintu tetap aman.
-        </p>
-        <div class="actions">
-          <a class="btn primary" href="#simulasi">Mulai Simulasi ↗</a>
-        </div>
-      </div>
+  <button id="connect">Hubungkan NodeMCU</button>
 
-      <div class="hero-art" aria-label="Ilustrasi pintu otomatis">
-        <div class="art-label">ACCESS CONTROL</div>
-        <div class="door-illustration" id="heroDoor">
-          <span class="door-handle"></span>
-        </div>
-        <div class="float-tag tag1">
-          SYSTEM STATUS
-          <strong id="heroStatus">STANDBY</strong>
-        </div>
-      </div>
-    </section>
+  <h3>Status:</h3>
+  <p id="status">Belum terhubung</p>
 
-    <section class="section wrap" id="dashboard">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Live simulation state</div>
-          <h2>Ringkasan Sistem</h2>
-        </div>
-        <p>Status akan berubah otomatis ketika kamu mencoba skenario pemindaian di panel simulasi.</p>
-      </div>
+  <h3>Data diterima:</h3>
+  <h2 id="result">Menunggu data...</h2>
 
-      <div class="cards">
-        <div class="card">
-          <div class="label">Status Arduino</div>
-          <div class="value"><span class="status neutral" id="arduinoStatus">Simulated</span></div>
-          <div class="sub">Tidak terhubung ke hardware</div>
-        </div>
-        <div class="card">
-          <div class="label">Status Sensor</div>
-          <div class="value"><span class="status neutral" id="sensorStatus">Ready</span></div>
-          <div class="sub">Fingerprint FPM10A (simulasi)</div>
-        </div>
-        <div class="card">
-          <div class="label">Status Pintu</div>
-          <div class="value"><span class="status neutral" id="doorStatusText">Locked</span></div>
-          <div class="sub">Electronic lock: <span id="lockText">Locked</span></div>
-        </div>
-        <div class="card">
-          <div class="label">Statistik Akses</div>
-          <div class="value">
-            <span id="successCount">0</span>
-            <span class="count-caption">berhasil</span>
-          </div>
-          <div class="sub"><span id="failedCount">0</span> akses ditolak</div>
-        </div>
-      </div>
-    </section>
+  <script>
+    let port;
+    let reader;
 
-    <section class="section wrap" id="simulasi">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Interactive demo</div>
-          <h2>Coba Simulasi Akses</h2>
-        </div>
-        <p>Pilih jenis sidik jari, lalu mulai pemindaian. Hasilnya akan mengubah visualisasi pintu dan log aktivitas.</p>
-      </div>
+    document.getElementById("connect").onclick =
+      connectNodeMCU;
 
-      <div class="sim-layout">
-        <div class="panel">
-          <h3>01 / Fingerprint scanner</h3>
-          <p class="panel-desc">Pilih skenario sidik jari untuk menguji respons sistem autentikasi.</p>
+    async function connectNodeMCU() {
+      try {
+        port = await navigator.serial.requestPort();
 
-          <div class="scan-zone">
-            <div class="scan-device" id="scanDevice">
-              <div class="fingerprint">🫆</div>
-              <div class="scan-line"></div>
-            </div>
-            <div class="scan-info">
-              <div class="status neutral" id="scanStatus">SENSOR READY</div>
-              <p id="scanMessage">Letakkan jari simulasi pada sensor, kemudian tekan tombol scan.</p>
-              <p class="user-caption">Pengguna terdaftar: <strong id="selectedUserLabel">ID 1B · Kelompok Superhero</strong></p>
-            </div>
-          </div>
+        await port.open({ baudRate: 9600 });
 
-          <div class="select-row">
-            <div class="select-row">
-  <button class="choice active" id="userChoice1" type="button">
-    ID 01<br>Salman
-  </button>
+        document.getElementById("status").textContent =
+          "NodeMCU terhubung";
 
-  <button class="choice" id="userChoice2" type="button">
-    ID 02<br>Aisyah
-  </button>
+        readData();
 
-  <button class="choice" id="userChoice3" type="button">
-    ID 03<br>Iqbal
-  </button>
+      } catch (error) {
+        document.getElementById("status").textContent =
+          "Gagal: " + error.message;
+      }
+    }
 
-  <button class="choice" id="userChoice4" type="button">
-    ID 04<br>Rizky ABS
-  </button>
+    async function readData() {
+      const decoder = new TextDecoderStream();
+      port.readable.pipeTo(decoder.writable);
 
-  <button class="choice" id="invalidChoice" type="button">
-    ✕ Tidak dikenal
-  </button>
-</div>
-          </div>
+      reader = decoder.readable.getReader();
 
-          <button class="btn primary full" id="scanBtn" type="button">
-            ▥ &nbsp; Scan Fingerprint
-          </button>
+      let buffer = "";
 
-          <div class="result">
-            <div>
-              <strong id="resultTitle">Sistem Siaga</strong>
-              <small id="resultDesc">Pintu terkunci menunggu autentikasi.</small>
-            </div>
-            <span class="status neutral" id="accessBadge">STANDBY</span>
-          </div>
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
 
-          <div class="actions action-row">
-            <button class="btn ghost action-button" id="resetBtn" type="button">Reset Sistem</button>
-            <button class="btn ghost action-button" id="autoLockBtn" type="button">Auto Lock: ON</button>
-          </div>
-        </div>
+          if (done) break;
 
-        <div class="panel">
-          <h3>02 / Door visualization</h3>
-          <p class="panel-desc">
-            Pintu hanya terbuka jika autentikasi berhasil. Pengunci akan aktif
-            kembali setelah beberapa detik jika Auto Lock menyala.
-          </p>
+          buffer += value;
 
-          <div class="door-scene">
-            <div class="door-visual" id="mainDoor" aria-label="Visualisasi pintu">
-              <!-- Visual pintu tertutup -->
-              <svg class="door-state-image closed" viewBox="0 0 190 185" role="img" aria-label="Pintu tertutup">
-                <rect x="35" y="8" width="120" height="165" rx="4"
-                  fill="#294f68" stroke="#75c9d8" stroke-width="7"/>
-                <rect x="48" y="21" width="94" height="139" rx="2"
-                  fill="#18384f" stroke="#5b91aa" stroke-width="3"/>
-                <path d="M58 31H132V150H58Z" fill="#20465e"/>
-                <circle cx="126" cy="94" r="5" fill="#59d8e9"/>
-                <rect x="25" y="173" width="140" height="6" rx="3" fill="#4a7188"/>
-              </svg>
+          const lines = buffer.split(/\r?\n/);
+          buffer = lines.pop();
 
-              <!-- Visual pintu terbuka -->
-              <svg class="door-state-image open" viewBox="0 0 190 185" role="img" aria-label="Pintu terbuka">
-                <rect x="25" y="8" width="120" height="165" rx="4"
-                  fill="#17364b" stroke="#75c9d8" stroke-width="7"/>
-                <rect x="35" y="19" width="96" height="145"
-                  fill="#0c2232" stroke="#416d85" stroke-width="3"/>
-                <path d="M145 17 L177 31 L177 157 L145 171Z"
-                  fill="#32647d" stroke="#75c9d8" stroke-width="4"/>
-                <path d="M151 29 L168 37 L168 150 L151 158Z" fill="#244c65"/>
-                <circle cx="155" cy="94" r="5" fill="#59d8e9"/>
-                <path d="M25 173H165" stroke="#4a7188" stroke-width="6" stroke-linecap="round"/>
-              </svg>
-            </div>
+          for (const data of lines) {
+            processData(data.trim());
+          }
+        }
+      } catch (error) {
+        document.getElementById("status").textContent =
+          "Koneksi terputus";
+      }
+    }
 
-            <div class="lock-indicator">
-              <span class="lock-icon" id="lockIcon">▣</span>
-              <span id="lockSceneText">ELECTRONIC LOCK · LOCKED</span>
-            </div>
-          </div>
+    function processData(data) {
+      const result = document.getElementById("result");
 
-          <div class="steps">
-            <div class="step">
-              <div class="step-num">STEP 01</div>
-              <h3>Scan</h3>
-              <p>Sensor membaca sidik jari simulasi.</p>
-            </div>
-            <div class="step">
-              <div class="step-num">STEP 02</div>
-              <h3>Verify</h3>
-              <p>Sistem memeriksa kecocokan identitas.</p>
-            </div>
-            <div class="step">
-              <div class="step-num">STEP 03</div>
-              <h3>Access</h3>
-              <p>Akses diberikan atau ditolak.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section wrap" id="log">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Riwayat Sistem</div>
-          <h2>Log Aktivitas</h2>
-        </div>
-        <div class="actions no-margin">
-          <button class="btn ghost" id="clearLogBtn" type="button">Hapus Log</button>
-        </div>
-      </div>
-
-      <div class="log-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Waktu</th>
-              <th>ID Pengguna</th>
-              <th>Nama</th>
-              <th>Autentikasi</th>
-              <th>Status Pintu</th>
-            </tr>
-          </thead>
-          <tbody id="logBody">
-            <tr>
-              <td colspan="6" class="empty">Belum ada aktivitas. Jalankan simulasi untuk membuat log.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-  </main>
-
-</div>
-
-<button onclick="testSerial()">
-  Hubungkan NodeMCU
-</button>
-
-<script src="script.js"></script>
+      if (data === "ACCESS:1") {
+        result.textContent = "AKSES DITERIMA - USER 1";
+      }
+      else if (data === "ACCESS:2") {
+        result.textContent = "AKSES DITERIMA - USER 2";
+      }
+      else if (data === "ACCESS:DENIED") {
+        result.textContent = "AKSES DITOLAK";
+      }
+      else if (data === "SYSTEM:READY") {
+        result.textContent = "NodeMCU siap digunakan";
+      }
+      else {
+        result.textContent = data;
+      }
+    }
+  </script>
 </body>
 </html>
