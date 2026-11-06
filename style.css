@@ -125,7 +125,7 @@ nav {
 .dot {
   width: 7px;
   height: 7px;
-  border-radius: 50%;
+  border-radius: 0%;
   background: var(--yellow);
   box-shadow: 0 0 12px currentColor;
 }
@@ -826,9 +826,6 @@ footer {
     gap: 12px;
   }
 
-  .navlinks a:nth-child(3) {
-    display: none;
-  }
 }
 
 /* MOBILE */
@@ -838,11 +835,16 @@ footer {
   }
 
   nav {
-    padding: 14px 0;
+    padding: 12px 0;
   }
 
   .navlinks {
-    display: none;
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+    white-space: nowrap;
+    overflow: visible;
+    flex-wrap: wrap; 
   }
 
   .hero {
@@ -896,5 +898,417 @@ footer {
 
   .panel {
     padding: 17px;
+  }
+}
+  
+  /* PANEL INFORMASI PERANGKAT */
+.device-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.device-card {
+  background: linear-gradient(145deg, #10283b, #0b2030);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.device-card h3 {
+  font-size: 16px;
+  margin-bottom: 7px;
+}
+
+.device-illustrations {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.device-item {
+  text-align: center;
+}
+
+.device-image {
+  height: 125px;
+  background: #091d2c;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 13px;
+}
+
+/* ILUSTRASI ARDUINO */
+.arduino-board {
+  width: 105px;
+  height: 72px;
+  background: #167a66;
+  border: 3px solid #4b9e8a;
+  border-radius: 7px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 18px #0005;
+}
+
+.arduino-chip {
+  background: #172c35;
+  color: #b9d7d0;
+  font-size: 8px;
+  padding: 10px 7px;
+  border-radius: 3px;
+}
+
+.usb-port {
+  position: absolute;
+  left: -8px;
+  top: 24px;
+  width: 12px;
+  height: 22px;
+  background: #a9b8c1;
+  border-radius: 3px;
+}
+
+.arduino-board span {
+  position: absolute;
+  bottom: 4px;
+  right: 7px;
+  font-size: 8px;
+  color: white;
+  font-weight: bold;
+}
+
+.arduino-pins {
+  position: absolute;
+  top: -5px;
+  right: 8px;
+  width: 55px;
+  height: 5px;
+  background: repeating-linear-gradient(
+    90deg, #d8c27a 0 3px, transparent 3px 7px
+  );
+}
+
+/* ILUSTRASI FINGERPRINT */
+.fingerprint-device {
+  width: 75px;
+  height: 90px;
+  background: linear-gradient(145deg, #263e52, #0c1c2a);
+  border: 2px solid #5c8299;
+  border-radius: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.fingerprint-device .fingerprint-icon {
+  font-size: 40px;
+  color: var(--cyan);
+}
+
+.fingerprint-device span {
+  font-size: 6px;
+  color: var(--muted);
+}
+
+/* ILUSTRASI ELECTRONIC LOCK */
+.electronic-lock {
+  width: 75px;
+  height: 75px;
+  background: #263d50;
+  border: 2px solid #64869b;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.lock-body {
+  font-size: 34px;
+  color: var(--green);
+}
+
+.electronic-lock span {
+  font-size: 8px;
+  color: var(--muted);
+}
+
+.device-item strong {
+  display: block;
+  font-size: 11px;
+}
+
+.device-item small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 5px;
+}
+
+/* DIAGRAM HUBUNGAN */
+.device-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.flow-device {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px;
+  background: #0a1c2a;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.flow-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: #153b52;
+  border-radius: 10px;
+  color: var(--cyan);
+  font-size: 22px;
+}
+
+.flow-device strong {
+  display: block;
+  font-size: 12px;
+}
+
+.flow-device small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+.flow-connector {
+  height: 43px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--cyan);
+}
+
+.flow-connector span {
+  font-size: 8px;
+  color: var(--muted);
+}
+
+.flow-connector div {
+  width: 1px;
+  height: 9px;
+  background: var(--cyan);
+}
+
+.flow-connector b {
+  font-size: 13px;
+}
+
+/* INDIKATOR LED */
+.led-status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.led-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #0a1c2a;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.led {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.green-led {
+  background: #5de0a0;
+  box-shadow: 0 0 13px #5de0a0;
+}
+
+.red-led {
+  background: #ff747c;
+  box-shadow: 0 0 13px #ff747c;
+}
+
+.led-status strong {
+  display: block;
+  font-size: 11px;
+}
+
+.led-status small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 5px;
+  line-height: 1.5;
+}
+
+.led-label {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.success-label {
+  color: var(--green);
+}
+
+.denied-label {
+  color: var(--red);
+}
+
+/* CATATAN HARDWARE */
+.hardware-note {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 13px;
+  padding: 17px;
+  background: #2b2a1e;
+  border: 1px solid #665a30;
+  border-radius: 13px;
+  color: #f4e6b4;
+}
+
+.note-icon {
+  font-size: 22px;
+}
+
+.hardware-note strong {
+  font-size: 12px;
+}
+
+.hardware-note p {
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 6px 0 0;
+  color: #d9cea5;
+}
+
+/* RESPONSIVE */
+@media(max-width:850px) {
+  .device-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(max-width:540px) {
+  .device-card {
+    padding: 17px;
+  }
+
+  .device-illustrations {
+    gap: 7px;
+  }
+
+  .device-image {
+    height: 105px;
+  }
+
+  .device-item strong {
+    font-size: 10px;
+  }
+
+  .device-item small {
+    font-size: 8px;
+  }
+
+  .led-status {
+    padding: 12px;
+    gap: 9px;
+  }
+
+  .led-label {
+    font-size: 8px;
+  }
+}
+  
+.project-footer {
+  background: #081a32;
+  color: #dce8f7;
+  padding: 45px 7% 18px;
+  margin-top: 60px;
+  border-top: 1px solid #1e426b;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 35px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.footer-section h3 {
+  color: #ffffff;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.footer-section p,
+.footer-section li {
+  color: #a9bdd5;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.footer-section ul {
+  padding-left: 18px;
+}
+
+.simulation-label {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: #123b5b;
+  color: #65d6a3;
+  font-size: 11px;
+}
+
+.footer-bottom {
+  border-top: 1px solid #203b5c;
+  margin-top: 35px;
+  padding-top: 18px;
+  text-align: center;
+}
+
+.footer-bottom p {
+  color: #7891ad;
+  font-size: 11px;
+}
+
+/* Tampilan mobile */
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .project-footer {
+    padding: 35px 6% 18px;
   }
 }

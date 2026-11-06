@@ -20,6 +20,7 @@
         <a href="#dashboard">Dashboard</a>
         <a href="#simulasi">Simulasi</a>
         <a href="#log">Log Aktivitas</a>
+        <a href="#sistem">Tentang Sistem</a>
       </div>
     </nav>
   </header>
@@ -28,7 +29,7 @@
     <section class="hero wrap">
       <div>
         <div class="eyebrow">Smart access</div>
-        <h1>Adiratna Kontrol,<br><span>cukup satu tendangan.</span></h1>
+        <h1>Cukup satu sentuhan,<br><span>Akses aman.</span></h1>
         <p class="lead">
           Simulasi sistem pintu otomatis berbasis sidik jari dan Arduino.
           Pelajari bagaimana autentikasi biometrik menentukan akses,
@@ -216,6 +217,165 @@
       </div>
     </section>
 
+    <section class="section wrap" id="perangkat">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Hardware information</div>
+          <h2>Informasi Perangkat</h2>
+        </div>
+        <p>
+          Gambaran komponen utama dan hubungan perangkat
+          dalam sistem keamanan pintu berbasis sidik jari.
+        </p>
+      </div>
+    
+      <div class="device-panel">
+    
+        <!-- Ilustrasi perangkat -->
+        <div class="device-card">
+          <h3>01 / Komponen Utama</h3>
+          <p class="panel-desc">
+            Perangkat yang digunakan dalam sistem akses sidik jari.
+          </p>
+    
+          <div class="device-illustrations">
+    
+            <!-- Arduino -->
+            <div class="device-item">
+              <div class="device-image arduino-image">
+                <div class="arduino-board">
+                  <div class="usb-port"></div>
+                  <div class="arduino-chip">ATmega</div>
+                  <div class="arduino-pins"></div>
+                  <span>UNO</span>
+                </div>
+              </div>
+              <strong>Arduino / NodeMCU</strong>
+              <small>Mikrokontroler</small>
+            </div>
+    
+            <!-- Fingerprint -->
+            <div class="device-item">
+              <div class="device-image">
+                <div class="fingerprint-device">
+                  <div class="fingerprint-icon">▥</div>
+                  <span>FINGERPRINT</span>
+                </div>
+              </div>
+              <strong>FPM10A</strong>
+              <small>Sensor sidik jari</small>
+            </div>
+    
+            <!-- Electronic lock -->
+            <div class="device-item">
+              <div class="device-image">
+                <div class="electronic-lock">
+                  <div class="lock-body">▣</div>
+                  <span>LOCK</span>
+                </div>
+              </div>
+              <strong>Electronic Lock</strong>
+              <small>Pengunci elektronik</small>
+            </div>
+    
+          </div>
+        </div>
+    
+        <!-- Diagram hubungan perangkat -->
+        <div class="device-card">
+          <h3>02 / Hubungan Antarperangkat</h3>
+          <p class="panel-desc">
+            Alur kerja komunikasi antara sensor, mikrokontroler,
+            dan pengunci elektronik.
+          </p>
+    
+          <div class="device-flow">
+    
+            <div class="flow-device">
+              <div class="flow-icon">▥</div>
+              <div>
+                <strong>Fingerprint Sensor</strong>
+                <small>Membaca sidik jari pengguna</small>
+              </div>
+            </div>
+    
+            <div class="flow-connector">
+              <span>DATA</span>
+              <div></div>
+              <b>↓</b>
+            </div>
+    
+            <div class="flow-device">
+              <div class="flow-icon">▦</div>
+              <div>
+                <strong>Mikrokontroler</strong>
+                <small>Memproses dan memverifikasi data</small>
+              </div>
+            </div>
+    
+            <div class="flow-connector">
+              <span>OUTPUT</span>
+              <div></div>
+              <b>↓</b>
+            </div>
+    
+            <div class="flow-device">
+              <div class="flow-icon">▣</div>
+              <div>
+                <strong>Electronic Lock</strong>
+                <small>Membuka atau mengunci pintu</small>
+              </div>
+            </div>
+    
+          </div>
+        </div>
+    
+        <!-- Indikator LED -->
+        <div class="device-card">
+          <h3>03 / Indikator Status Akses</h3>
+          <p class="panel-desc">
+            Representasi indikator LED berdasarkan hasil autentikasi.
+          </p>
+    
+          <div class="led-status-list">
+            <div class="led-status">
+              <span class="led green-led"></span>
+              <div>
+                <strong>Akses Berhasil</strong>
+                <small>Sidik jari dikenali, pintu dapat dibuka.</small>
+              </div>
+              <span class="led-label success-label">GRANTED</span>
+            </div>
+    
+            <div class="led-status">
+              <span class="led red-led"></span>
+              <div>
+                <strong>Akses Ditolak</strong>
+                <small>Sidik jari tidak dikenali, pintu tetap terkunci.</small>
+              </div>
+              <span class="led-label denied-label">DENIED</span>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Catatan perangkat -->
+        <div class="hardware-note">
+          <span class="note-icon">ⓘ</span>
+          <div>
+            <strong>Informasi Koneksi Perangkat</strong>
+            <p>
+              Panel ini merupakan representasi visual dari rancangan
+              perangkat keras. Sensor fingerprint, mikrokontroler,
+              dan pengunci elektronik belum terhubung secara langsung
+              dengan website. Status perangkat pada halaman ini
+              masih berupa simulasi.
+            </p>
+          </div>
+        </div>
+    
+      </div>
+    </section>
+
     <section class="section wrap" id="log">
       <div class="section-head">
         <div>
@@ -252,9 +412,53 @@
 
 </div>
 
-<button onclick="testSerial()">
-  Hubungkan NodeMCU
-</button>
+<section class="section wrap" id="sistem">
+  <div class="eyebrow">Informasi</div>
+  <h2>Tentang Sistem</h2>
+<footer class="project-footer">
+  <div class="footer-container">
+
+    <div class="footer-section">
+      <h3>Smart Door Security System</h3>
+      <p>
+        Sistem keamanan pintu otomatis berbasis sidik jari
+        yang dikembangkan untuk meningkatkan keamanan,
+        kemudahan akses, dan efisiensi penggunaan pintu.
+      </p>
+    </div>
+
+    <div class="footer-section">
+      <h3>Teknologi yang Digunakan</h3>
+      <ul>
+        <li>Arduino Uno R3</li>
+        <li>Fingerprint Sensor FPM10A</li>
+        <li>Motor Servo</li>
+        <li>HTML, CSS, dan JavaScript</li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h3>Informasi Sistem</h3>
+      <p>
+        Tampilan sistem ini merupakan simulasi
+        berbasis browser untuk menggambarkan
+        alur kerja Smart Door Security System.
+      </p>
+      <span class="simulation-label">
+        ● Browser Simulation
+      </span>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    <p>
+      © 2026 Smart Door Security System.
+      Developed for educational purposes.
+    </p>
+  </div>
+</footer>
+</section>
 
 <script src="script.js"></script>
 </body>

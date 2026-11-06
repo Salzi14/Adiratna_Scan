@@ -383,12 +383,3 @@ function resetSystem() {
 
 setDoor(false);
 renderLogs();
-
-async function testSerial() {
-  try {
-    const port = await navigator.serial.requestPort();
-    alert("Perangkat serial berhasil dipilih!");
-  } catch (error) {
-    alert("Gagal: " + error.message);
-  }
-}
